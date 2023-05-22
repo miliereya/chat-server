@@ -11,11 +11,13 @@ import { JwtService } from '@nestjs/jwt'
 import { jwt_access_secret, jwt_refresh_secret } from '../constants'
 import { JwtPayload } from './types'
 import { hash, genSalt, compare } from 'bcryptjs'
+import { UserService } from '../user/user.service'
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private jwtService: JwtService,
+		private userService: UserService,
 		@InjectModel('User') private readonly userModel: Model<User>
 	) {}
 
@@ -34,7 +36,7 @@ export class AuthService {
 		const user = await this.userModel.create(userCredentials)
 		const tokens = await this.generateTokens({ _id: user._id })
 
-		return { tokens, user: this.pickUserData(user) }
+		return { tokens, user: this.userService.pickUserData(user) }
 	}
 
 	async login(dto: LoginDto) {
@@ -46,7 +48,7 @@ export class AuthService {
 
 		const tokens = await this.generateTokens({ _id: user._id })
 
-		return { tokens, user: this.pickUserData(user) }
+		return { tokens, user: this.userService.pickUserData(user) }
 	}
 
 	async refresh(refreshToken: string) {
@@ -86,13 +88,5 @@ export class AuthService {
 			secret: jwt_refresh_secret,
 		})
 		return { accessToken, refreshToken }
-	}
-
-	private pickUserData(user: User) {
-		return {
-			email: user.email,
-			username: user.username,
-			avatar: user.avatar
-		}
 	}
 }

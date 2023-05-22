@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { UserSchema } from 'src/user/schemas/user.schema'
 import { JwtModule } from '@nestjs/jwt'
 import { jwt_access_secret } from 'src/constants'
+import { UserModule } from 'src/user/user.module'
 
 @Module({
 	imports: [
@@ -14,6 +15,7 @@ import { jwt_access_secret } from 'src/constants'
 			secret: jwt_access_secret,
 			signOptions: { expiresIn: '60s' },
 		}),
+		UserModule,
 	],
 	controllers: [AuthController],
 	providers: [AuthService],
