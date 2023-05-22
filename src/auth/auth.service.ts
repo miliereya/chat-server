@@ -8,8 +8,9 @@ import { Model } from 'mongoose'
 import { User } from 'src/user/schemas/user.schema'
 import { LoginDto, RegistrationDto } from './dto'
 import { JwtService } from '@nestjs/jwt'
-import { jwt_access_secret, jwt_refresh_secret } from 'src/constants'
+import { jwt_access_secret, jwt_refresh_secret } from '../constants'
 import { JwtPayload } from './types'
+import { hash, genSalt, compare } from 'bcryptjs'
 
 @Injectable()
 export class AuthService {
@@ -23,15 +24,26 @@ export class AuthService {
 		if (isUserExist)
 			throw new BadRequestException('This email is already taken')
 
-		const user = await this.userModel.create(dto)
+		const salt = await genSalt(3)
+
+		const userCredentials = {
+			...dto,
+			password: await hash(dto.password, salt),
+		}
+
+		const user = await this.userModel.create(userCredentials)
 		const tokens = await this.generateTokens({ _id: user._id })
 
 		return { tokens, user: this.pickUserData(user) }
 	}
 
 	async login(dto: LoginDto) {
-		const user = await this.userModel.findOne({ ...dto })
-		if (!user) throw new UnauthorizedException('Wrong credentials')
+		const user = await this.userModel.findOne({ email: dto.email })
+		if (!user) throw new UnauthorizedException('No user by following email')
+
+		const isValidPassword = await compare(dto.password, user.password)
+		if (!isValidPassword)
+			throw new BadRequestException('Wrong credentials')
 
 		const tokens = await this.generateTokens({ _id: user._id })
 
@@ -39,7 +51,7 @@ export class AuthService {
 	}
 
 	async refresh(refreshToken: string) {
-		if (!refreshToken) throw new UnauthorizedException()
+		if (!refreshToken) throw new BadRequestException('No refresh token was provided')
 		try {
 			const refreshTokenData = await this.jwtService.verifyAsync(
 				refreshToken,
@@ -59,7 +71,7 @@ export class AuthService {
 
 			return { accessToken }
 		} catch (e) {
-			throw new UnauthorizedException()
+			throw new UnauthorizedException('Wrong refresh token')
 		}
 	}
 
