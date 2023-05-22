@@ -42,8 +42,7 @@ export class AuthService {
 		if (!user) throw new UnauthorizedException('No user by following email')
 
 		const isValidPassword = await compare(dto.password, user.password)
-		if (!isValidPassword)
-			throw new BadRequestException('Wrong credentials')
+		if (!isValidPassword) throw new BadRequestException('Wrong credentials')
 
 		const tokens = await this.generateTokens({ _id: user._id })
 
@@ -51,7 +50,8 @@ export class AuthService {
 	}
 
 	async refresh(refreshToken: string) {
-		if (!refreshToken) throw new BadRequestException('No refresh token was provided')
+		if (!refreshToken)
+			throw new BadRequestException('No refresh token was provided')
 		try {
 			const refreshTokenData = await this.jwtService.verifyAsync(
 				refreshToken,
@@ -69,7 +69,7 @@ export class AuthService {
 				secret: jwt_access_secret,
 			})
 
-			return { accessToken }
+			return { tokens: { accessToken } }
 		} catch (e) {
 			throw new UnauthorizedException('Wrong refresh token')
 		}

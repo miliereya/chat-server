@@ -110,7 +110,7 @@ describe('auth.service-spec.ts', () => {
 		it('should return accessToken', async () => {
 			const data = await service.registration(userCredentials)
 			const refreshData = await service.refresh(data.tokens.refreshToken)
-			expect(refreshData.accessToken).toBeDefined()
+			expect(refreshData.tokens.accessToken).toBeDefined()
 		})
 
 		it('should throw 400 (No refresh token was provided)', async () => {
