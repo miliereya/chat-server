@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
-import { jwt_access_secret } from 'src/constants'
+import { jwt_access_secret } from '../../constants'
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -22,8 +22,6 @@ export class JwtAuthGuard implements CanActivate {
 			const payload = await this.jwtService.verifyAsync(token, {
 				secret: jwt_access_secret,
 			})
-			// 💡 We're assigning the payload to the request object here
-			// so that we can access it in our route handlers
 			request.userId = payload
 		} catch {
 			throw new UnauthorizedException('Access token validation failed')
