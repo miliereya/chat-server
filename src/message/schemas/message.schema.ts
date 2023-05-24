@@ -13,9 +13,6 @@ export class Message {
 	date: Date
 
 	@Prop()
-	username: string
-
-	@Prop()
 	text: string
 }
 

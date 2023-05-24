@@ -9,10 +9,12 @@ import { MessageService } from './message.service'
 import { CreateMessageDto } from './dto/create-message.dto'
 import { UpdateMessageDto } from './dto/update-message.dto'
 import { Server, Socket } from 'socket.io'
+import { client_url } from 'src/constants'
 
 @WebSocketGateway({
 	cors: {
-		origin: '*',
+		credentials: true,
+		origin: client_url,
 	},
 })
 export class MessageGateway {
@@ -25,8 +27,10 @@ export class MessageGateway {
 		@MessageBody() createMessageDto: CreateMessageDto,
 		@ConnectedSocket() client: Socket
 	) {
+		console.log(createMessageDto, client)
 		const message = await this.messageService.createMessage(
-			createMessageDto, client.id
+			createMessageDto,
+			client.id
 		)
 
 		this.server.emit('message', message)
@@ -37,7 +41,7 @@ export class MessageGateway {
 	@SubscribeMessage('find-all-message')
 	findAll() {
 		return this.messageService.findAll()
-    // пока не работает
+		// пока не работает
 	}
 
 	@SubscribeMessage('join-room')

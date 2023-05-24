@@ -1,4 +1,10 @@
+import { Types } from "mongoose"
+
 export interface IMessage {
-    name: string
-    text: string
+	chatId: Types.ObjectId
+	email: string
+	text: string
+	date: Date
 }
+
+
