@@ -16,7 +16,8 @@ export class ChatService {
 		private readonly userConnectionModel: Model<UserConnection>
 	) {}
 
-	connect(ConnectDto: ConnectDto, clientId: string) {
+	async connect(ConnectDto: ConnectDto, clientId: string) {
+		await this.userConnectionModel.deleteMany({user: ConnectDto.userId})
 		this.userConnectionModel.create({
 			socketId: clientId,
 			user: ConnectDto.userId,

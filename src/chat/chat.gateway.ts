@@ -28,7 +28,6 @@ export class ChatGateway {
 		@ConnectedSocket() client: Socket
 	) {
 		this.chatService.connect(ConnectDto, client.id)
-		
 	}
 
 	@SubscribeMessage('chat/start')
