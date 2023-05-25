@@ -36,8 +36,8 @@ export class ChatGateway {
 		@ConnectedSocket() client: Socket
 	) {
 		const chat = await this.chatService.startChat(startChatDto)
-
-		client.to(startChatDto.toUserId).emit('chat/receive-new', chat)
+    const toUserSocketId = await this.chatService.getSocket(startChatDto.toUserId)
+		client.to(toUserSocketId).emit('chat/receive-new', chat)
 
 		return chat
 	}

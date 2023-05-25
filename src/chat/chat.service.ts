@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { Chat } from './schemas/chat.schema'
 import { StartChatDto } from './dto/start-chat.dto'
 import { User } from 'src/user/schemas/user.schema'
@@ -39,5 +39,10 @@ export class ChatService {
 		})
 
 		return chat
+	}
+
+	async getSocket(userId: string) {
+		const connectionData = await this.userConnectionModel.findOne({userId})
+		return connectionData.socketId
 	}
 }
