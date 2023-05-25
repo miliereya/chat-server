@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
 
-@Schema()
+@Schema({ timestamps: true })
 export class Chat {
 	@Prop()
 	users: Types.ObjectId[]
 
-	@Prop()
+	@Prop({ default: [] })
 	messages: Types.ObjectId[]
 }
 

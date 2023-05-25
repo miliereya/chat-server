@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Types } from 'mongoose'
 
 @Schema()
 export class User {
@@ -13,6 +14,9 @@ export class User {
 
 	@Prop({ default: '' })
 	avatar: string
+
+	@Prop({ default: [] })
+	chats: Types.ObjectId
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)
