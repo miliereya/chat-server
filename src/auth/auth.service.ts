@@ -35,8 +35,9 @@ export class AuthService {
 
 		const user = await this.userModel.create(userCredentials)
 		const tokens = await this.generateTokens({ _id: user._id })
+		const userData = await this.userService.pickUserData(user)
 
-		return { tokens, user: await this.userService.pickUserData(user) }
+		return { tokens, ...userData }
 	}
 
 	async login(dto: LoginDto) {
@@ -47,8 +48,9 @@ export class AuthService {
 		if (!isValidPassword) throw new BadRequestException('Wrong credentials')
 
 		const tokens = await this.generateTokens({ _id: user._id })
+		const userData = await this.userService.pickUserData(user)
 
-		return { tokens, user: await this.userService.pickUserData(user) }
+		return { tokens, ...userData }
 	}
 
 	async refresh(refreshToken: string) {
@@ -73,10 +75,10 @@ export class AuthService {
 			const user = await this.userModel.findById(payload._id)
 			if (!user)
 				throw new UnauthorizedException('No user by following email')
-
+			const userData = await this.userService.pickUserData(user)
 			return {
 				tokens: { accessToken },
-				user: await this.userService.pickUserData(user),
+				...userData,
 			}
 		} catch (e) {
 			throw new UnauthorizedException('Wrong refresh token')

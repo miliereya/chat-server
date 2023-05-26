@@ -63,11 +63,13 @@ export class UserService {
 			chats.push({ messages: chat.messages, users })
 		}
 		return {
-			_id: user._id,
-			email: user.email,
-			username: user.username,
-			avatar: user.avatar,
-			chats,
+			user: {
+				_id: user._id,
+				email: user.email,
+				username: user.username,
+				avatar: user.avatar,
+			},
+			chats: user.chats,
 		}
 	}
 
