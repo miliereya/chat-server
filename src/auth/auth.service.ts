@@ -36,7 +36,7 @@ export class AuthService {
 		const user = await this.userModel.create(userCredentials)
 		const tokens = await this.generateTokens({ _id: user._id })
 
-		return { tokens, user: this.userService.pickUserData(user) }
+		return { tokens, user: await this.userService.pickUserData(user) }
 	}
 
 	async login(dto: LoginDto) {
@@ -48,7 +48,7 @@ export class AuthService {
 
 		const tokens = await this.generateTokens({ _id: user._id })
 
-		return { tokens, user: this.userService.pickUserData(user) }
+		return { tokens, user: await this.userService.pickUserData(user) }
 	}
 
 	async refresh(refreshToken: string) {
@@ -70,8 +70,14 @@ export class AuthService {
 				expiresIn: '20m',
 				secret: jwt_access_secret,
 			})
+			const user = await this.userModel.findById(payload._id)
+			if (!user)
+				throw new UnauthorizedException('No user by following email')
 
-			return { tokens: { accessToken } }
+			return {
+				tokens: { accessToken },
+				user: await this.userService.pickUserData(user),
+			}
 		} catch (e) {
 			throw new UnauthorizedException('Wrong refresh token')
 		}

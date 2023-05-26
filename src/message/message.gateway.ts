@@ -27,40 +27,36 @@ export class MessageGateway {
 		@MessageBody() createMessageDto: CreateMessageDto,
 		@ConnectedSocket() client: Socket
 	) {
-		console.log(createMessageDto, client)
-		const message = await this.messageService.createMessage(
-			createMessageDto,
-			client.id
-		)
-
-		this.server.emit('message', message)
-
-		return message
+		return this.messageService.createMessage(createMessageDto, client)
 	}
+	// 	this.server.emit('message', message)
 
-	@SubscribeMessage('find-all-message')
-	findAll() {
-		return this.messageService.findAll()
-		// пока не работает
-	}
+	// 	return message
+	// }
 
-	@SubscribeMessage('join-room')
-	joinRoom(
-		@MessageBody('email') email: string,
-		@ConnectedSocket() client: Socket
-	) {
-		return this.messageService.joinRoom(email, client.id)
-	}
+	// @SubscribeMessage('find-all-message')
+	// findAll() {
+	// 	return this.messageService.findAll()
+	// 	// пока не работает
+	// }
 
-	@SubscribeMessage('typing')
-	async typing(
-		@MessageBody('isTyping') isTyping: boolean,
-		@ConnectedSocket() client: Socket
-	) {
-		const email = await this.messageService.getClientEmail(client.id)
+	// @SubscribeMessage('join-room')
+	// joinRoom(
+	// 	@MessageBody('email') email: string,
+	// 	@ConnectedSocket() client: Socket
+	// ) {
+	// 	return this.messageService.joinRoom(email, client.id)
+	// }
 
-		client.broadcast.emit('typing', { email, isTyping })
-	}
+	// @SubscribeMessage('typing')
+	// async typing(
+	// 	@MessageBody('isTyping') isTyping: boolean,
+	// 	@ConnectedSocket() client: Socket
+	// ) {
+	// 	const email = await this.messageService.getClientEmail(client.id)
+
+	// 	client.broadcast.emit('typing', { email, isTyping })
+	// }
 
 	// @SubscribeMessage('updateMessage')
 	// update(@MessageBody() updateMessageDto: UpdateMessageDto) {

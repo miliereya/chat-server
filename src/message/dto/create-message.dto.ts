@@ -1,15 +1,12 @@
-import { IsDate, IsEmail, IsString } from "class-validator"
+import { IsString } from "class-validator"
 import { Types } from "mongoose"
 
 export class CreateMessageDto {
 	@IsString()
 	chatId: Types.ObjectId
 
-	@IsDate()
-	date: Date
-
 	@IsString()
-	username: string
+	user: Types.ObjectId
 
 	@IsString()
 	text: string

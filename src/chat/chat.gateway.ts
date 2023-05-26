@@ -9,6 +9,7 @@ import { ChatService } from './chat.service'
 import { StartChatDto } from './dto/start-chat.dto'
 import { client_url } from 'src/constants'
 import { Server, Socket } from 'socket.io'
+import { ChatActions } from './types'
 import { ConnectDto } from './dto/connect.dto'
 
 @WebSocketGateway({
@@ -22,23 +23,26 @@ export class ChatGateway {
 	server: Server
 	constructor(private readonly chatService: ChatService) {}
 
-	@SubscribeMessage('chat/connect')
+	@SubscribeMessage(ChatActions.connect)
 	async connect(
-		@MessageBody() ConnectDto: ConnectDto,
+		@MessageBody() connectDto: ConnectDto,
 		@ConnectedSocket() client: Socket
 	) {
-		this.chatService.connect(ConnectDto, client.id)
+		this.chatService.connect(connectDto, client.id)
 	}
 
-	@SubscribeMessage('chat/start')
+	@SubscribeMessage(ChatActions.start)
 	async startChat(
 		@MessageBody() startChatDto: StartChatDto,
 		@ConnectedSocket() client: Socket
 	) {
 		const chat = await this.chatService.startChat(startChatDto)
-    const toUserSocketId = await this.chatService.getSocket(startChatDto.toUserId)
-		client.to(toUserSocketId).emit('chat/receive-new', chat)
-
+		const toUserSocketId = await this.chatService.getSocket(
+			startChatDto.toUserId
+		)
+		if (toUserSocketId) {
+			client.to(toUserSocketId).emit(ChatActions.receive_new, chat)
+		}
 		return chat
 	}
 }

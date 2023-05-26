@@ -15,5 +15,6 @@ import { UserConnectionSchema } from './schemas/user-connection.schema'
 		]),
 	],
 	providers: [ChatGateway, ChatService],
+	exports: [ChatService],
 })
 export class ChatModule {}

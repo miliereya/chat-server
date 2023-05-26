@@ -5,10 +5,14 @@ import { User } from './schemas/user.schema'
 import { UpdateAvatarDto } from './dto/update-avatar.dto'
 import { FindUsersDto } from './dto/find-users.dto'
 import { TypeFindUsersMongooseParams } from './types'
+import { ChatService } from 'src/chat/chat.service'
 
 @Injectable()
 export class UserService {
-	constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+	constructor(
+		@InjectModel('User') private readonly userModel: Model<User>,
+		private readonly chatService: ChatService
+	) {}
 
 	async findUsers(dto: FindUsersDto) {
 		const query: TypeFindUsersMongooseParams = {
@@ -40,7 +44,34 @@ export class UserService {
 
 		return user
 	}
-	pickUserData(
+
+	async pickUserData(
+		user: Omit<
+			User & {
+				_id: Types.ObjectId
+			},
+			never
+		>
+	) {
+		const chats = []
+		for (let i = 0; i < user.chats.length; i++) {
+			const chat = await this.chatService.getOneChat(user.chats[i])
+			const users = []
+			for (let l = 0; l < chat.users.length; l++) {
+				users.push(this.pickUserPublicData(chat.users[l]))
+			}
+			chats.push({ messages: chat.messages, users })
+		}
+		return {
+			_id: user._id,
+			email: user.email,
+			username: user.username,
+			avatar: user.avatar,
+			chats,
+		}
+	}
+
+	pickUserPublicData(
 		user: Omit<
 			User & {
 				_id: Types.ObjectId
@@ -53,7 +84,6 @@ export class UserService {
 			email: user.email,
 			username: user.username,
 			avatar: user.avatar,
-			chats: user.chats
 		}
 	}
 }

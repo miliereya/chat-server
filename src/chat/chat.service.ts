@@ -13,7 +13,7 @@ export class ChatService {
 		@InjectModel('Chat') private readonly chatModel: Model<Chat>,
 		@InjectModel('User') private readonly userModel: Model<User>,
 		@InjectModel('UserConnection')
-		private readonly userConnectionModel: Model<UserConnection>
+		private readonly userConnectionModel: Model<UserConnection>,
 	) {}
 
 	async connect(ConnectDto: ConnectDto, clientId: string) {
@@ -41,8 +41,13 @@ export class ChatService {
 		return chat
 	}
 
-	async getSocket(userId: string) {
+	async getSocket(userId: Types.ObjectId) {
 		const connectionData = await this.userConnectionModel.findOne({userId})
 		return connectionData.socketId
+	}
+
+	async getOneChat (chatId: Types.ObjectId): Promise<any> {
+		const chat = await this.chatModel.findById(chatId).populate('users').populate('messages').exec()
+		return chat
 	}
 }

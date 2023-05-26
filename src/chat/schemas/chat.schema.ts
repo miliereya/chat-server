@@ -3,10 +3,10 @@ import { Types } from 'mongoose'
 
 @Schema({ timestamps: true })
 export class Chat {
-	@Prop()
+	@Prop({ ref: 'User'})
 	users: Types.ObjectId[]
 
-	@Prop({ default: [] })
+	@Prop({ default: [], ref: 'Message' })
 	messages: Types.ObjectId[]
 }
 

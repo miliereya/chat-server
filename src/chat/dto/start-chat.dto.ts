@@ -1,9 +1,10 @@
-import { IsString } from "class-validator";
+import { IsString } from "class-validator"
+import { Types } from "mongoose"
 
 export class StartChatDto {
     @IsString()
-    fromUserId: string
+    fromUserId: Types.ObjectId
 
     @IsString()
-    toUserId: string
+    toUserId: Types.ObjectId
 }

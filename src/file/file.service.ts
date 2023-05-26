@@ -12,12 +12,13 @@ export class FileService {
 		if (!folder) throw new BadRequestException('folder is required')
 		const uploadFolder = `${path}/uploads/${folder}`
 		await ensureDir(uploadFolder)
+		const uniqueFileName = `${Date.now()}-${file.originalname}`
 
-		await writeFile(`${uploadFolder}/${file.originalname}`, file.buffer)
+		await writeFile(`${uploadFolder}/${uniqueFileName}`, file.buffer)
 
 		return {
-			url: `/uploads/${folder}/${file.originalname}`,
-			name: file.originalname,
+			url: `/uploads/${folder}/${uniqueFileName}`,
+			name: uniqueFileName,
 		}
 	}
 

@@ -16,7 +16,7 @@ export class User {
 	avatar: string
 
 	@Prop({ default: [] })
-	chats: Types.ObjectId
+	chats: Types.ObjectId[]
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

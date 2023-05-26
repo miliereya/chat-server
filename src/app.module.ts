@@ -6,7 +6,6 @@ import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { FileModule } from './file/file.module';
-import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
 import { ChatModule } from './chat/chat.module';
 

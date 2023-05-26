@@ -8,11 +8,11 @@ import { Response, Request } from 'express'
 
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly AuthService: AuthService) {}
+	constructor(private readonly authService: AuthService) {}
 
 	@Post('registration')
 	async registration(@Body() dto: RegistrationDto, @Res() res: Response) {
-		const data = await this.AuthService.registration(dto)
+		const data = await this.authService.registration(dto)
 		res.cookie('refreshToken', data.tokens.refreshToken, { httpOnly: true })
 		delete data.tokens.refreshToken
 		return res.send(data)
@@ -21,7 +21,7 @@ export class AuthController {
 	@HttpCode(200)
 	@Post('login')
 	async login(@Body() dto: LoginDto, @Res() res: Response) {
-		const data = await this.AuthService.login(dto)
+		const data = await this.authService.login(dto)
 		res.cookie('refreshToken', data.tokens.refreshToken, { httpOnly: true })
 		delete data.tokens.refreshToken
 		return res.send(data)
@@ -30,7 +30,7 @@ export class AuthController {
 	@HttpCode(200)
 	@Post('refresh')
 	async refresh(@Req() req: Request) {
-		return this.AuthService.refresh(req?.cookies['refreshToken'])
+		return this.authService.refresh(req?.cookies['refreshToken'])
 	}
 
 	@Get('check')

@@ -1,16 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
 
-@Schema()
+@Schema({timestamps: true})
 export class Message {
 	@Prop()
 	chatId: Types.ObjectId
 
-	@Prop()
-	email: string
-
-	@Prop()
-	date: Date
+	@Prop({ref: 'User'})
+	user: Types.ObjectId
 
 	@Prop()
 	text: string
