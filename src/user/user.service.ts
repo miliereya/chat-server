@@ -28,7 +28,9 @@ export class UserService {
 		const user = await this.findById(userId)
 		user.avatar = dto.avatar
 		await user.save()
-		return this.pickUserData(user)
+		return {
+			avatar: user.avatar
+		}
 	}
 
 	async findByIdPublic(_id: Types.ObjectId) {
