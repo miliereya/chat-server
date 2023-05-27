@@ -29,15 +29,15 @@ export class UserService {
 		user.avatar = dto.avatar
 		await user.save()
 		return {
-			avatar: user.avatar
+			avatar: user.avatar,
 		}
 	}
 
 	async findByIdPublic(_id: Types.ObjectId) {
 		const user = await this.userModel.findById(_id)
 		if (!user) throw new NotFoundException('No user by following id')
-
-		return { ...this.pickUserData(user), _id: user._id }
+		const userData = await this.pickUserData(user)
+		return { ...userData.user, _id: user._id }
 	}
 
 	private async findById(_id: Types.ObjectId) {
@@ -71,7 +71,7 @@ export class UserService {
 				username: user.username,
 				avatar: user.avatar,
 			},
-			chats: user.chats,
+			chats,
 		}
 	}
 

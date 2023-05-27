@@ -42,7 +42,7 @@ export class AuthService {
 
 	async login(dto: LoginDto) {
 		const user = await this.userModel.findOne({ email: dto.email })
-		if (!user) throw new UnauthorizedException('No user by following email')
+		if (!user) throw new BadRequestException('No user by following email')
 
 		const isValidPassword = await compare(dto.password, user.password)
 		if (!isValidPassword) throw new BadRequestException('Wrong credentials')
