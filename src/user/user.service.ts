@@ -62,7 +62,7 @@ export class UserService {
 			for (let l = 0; l < chat.users.length; l++) {
 				users.push(this.pickUserPublicData(chat.users[l]))
 			}
-			chats.push({ messages: chat.messages, users })
+			chats.push({ ...chat, messages: chat.messages, users })
 		}
 		return {
 			user: {
