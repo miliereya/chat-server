@@ -31,19 +31,20 @@ export class ChatService {
 		})
 
 		await this.userModel.findByIdAndUpdate(toUserId, {
-			$push: { chats: chat },
+			$push: { chats: chat._id },
 		})
 
-		this.userModel.findByIdAndUpdate(fromUserId, {
-			$push: { chats: chat },
+		await this.userModel.findByIdAndUpdate(fromUserId, {
+			$push: { chats: chat._id },
 		})
+		
 
 		return chat
 	}
 
 	async getSocket(userId: Types.ObjectId) {
 		const connectionData = await this.userConnectionModel.findOne({
-			userId,
+			user: userId,
 		})
 		if (!connectionData) return null
 		return connectionData.socketId

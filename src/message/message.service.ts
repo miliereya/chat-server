@@ -34,7 +34,7 @@ export class MessageService {
 		for (let k = 0; k < toUserSocketIds.length; k++) {
 			client
 				.to(toUserSocketIds[k])
-				.emit(MessageActions.send_message, message)
+				.emit(MessageActions.receive_new, message)
 		}
 		return message
 	}

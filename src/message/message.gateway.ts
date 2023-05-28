@@ -10,6 +10,7 @@ import { CreateMessageDto } from './dto/create-message.dto'
 import { UpdateMessageDto } from './dto/update-message.dto'
 import { Server, Socket } from 'socket.io'
 import { client_url } from 'src/constants'
+import { MessageActions } from './types/message-actions.types'
 
 @WebSocketGateway({
 	cors: {
@@ -22,7 +23,7 @@ export class MessageGateway {
 	server: Server
 	constructor(private readonly messageService: MessageService) {}
 
-	@SubscribeMessage('create-message')
+	@SubscribeMessage(MessageActions.send_message)
 	async create(
 		@MessageBody() createMessageDto: CreateMessageDto,
 		@ConnectedSocket() client: Socket

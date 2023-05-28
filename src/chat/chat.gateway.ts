@@ -40,6 +40,7 @@ export class ChatGateway {
 		const toUserSocketId = await this.chatService.getSocket(
 			startChatDto.toUserId
 		)
+
 		if (toUserSocketId) {
 			client.to(toUserSocketId).emit(ChatActions.receive_new, chat)
 		}
