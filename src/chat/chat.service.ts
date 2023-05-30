@@ -40,7 +40,6 @@ export class ChatService {
 		await this.userModel.findByIdAndUpdate(fromUserId, {
 			$push: { chats: newChat._id },
 		})
-		
 
 		const chat = await this.getOneChat(newChat._id)
 		const users = []
@@ -48,7 +47,10 @@ export class ChatService {
 			users.push(this.pickUserPublicData(chat.users[l]))
 		}
 		return {
-			...chat,
+			_id: chat._id,
+			createdAt: chat.createdAt,
+			updatedAt: chat.updatedAt,
+			messages: chat.messages,
 			users,
 		}
 	}
