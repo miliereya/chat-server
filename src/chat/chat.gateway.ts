@@ -11,6 +11,7 @@ import { client_url } from 'src/constants'
 import { Server, Socket } from 'socket.io'
 import { ChatActions } from './types'
 import { ConnectDto } from './dto/connect.dto'
+import { DeleteChatDto } from './dto/delete-chat.dto'
 
 @WebSocketGateway({
 	cors: {
@@ -45,5 +46,13 @@ export class ChatGateway {
 			client.to(toUserSocketId).emit(ChatActions.receive_new, chat)
 		}
 		return chat
+	}
+
+	@SubscribeMessage(ChatActions.delete)
+	async deleteChat(
+		@MessageBody() deleteChatDto: DeleteChatDto,
+		@ConnectedSocket() client: Socket
+	) {
+		await this.chatService.deleteChat(deleteChatDto, client)
 	}
 }

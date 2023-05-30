@@ -6,6 +6,9 @@ import { StartChatDto } from './dto/start-chat.dto'
 import { User } from 'src/user/schemas/user.schema'
 import { UserConnection } from './schemas/user-connection.schema'
 import { ConnectDto } from './dto/connect.dto'
+import { Socket } from 'socket.io'
+import { DeleteChatDto } from './dto/delete-chat.dto'
+import { ChatActions } from './types'
 
 @Injectable()
 export class ChatService {
@@ -26,20 +29,28 @@ export class ChatService {
 
 	async startChat(startChatDto: StartChatDto) {
 		const { fromUserId, toUserId } = startChatDto
-		const chat = await this.chatModel.create({
+		const newChat = await this.chatModel.create({
 			users: [fromUserId, toUserId],
 		})
 
 		await this.userModel.findByIdAndUpdate(toUserId, {
-			$push: { chats: chat._id },
+			$push: { chats: newChat._id },
 		})
 
 		await this.userModel.findByIdAndUpdate(fromUserId, {
-			$push: { chats: chat._id },
+			$push: { chats: newChat._id },
 		})
 		
 
-		return chat
+		const chat = await this.getOneChat(newChat._id)
+		const users = []
+		for (let l = 0; l < chat.users.length; l++) {
+			users.push(this.pickUserPublicData(chat.users[l]))
+		}
+		return {
+			...chat,
+			users,
+		}
 	}
 
 	async getSocket(userId: Types.ObjectId) {
@@ -57,5 +68,36 @@ export class ChatService {
 			.populate('messages')
 			.exec()
 		return chat
+	}
+
+	async deleteChat(deleteChatDto: DeleteChatDto, client: Socket) {
+		const chat = await this.chatModel.findById(deleteChatDto.chatId)
+		for (let i = 0; i < chat.users.length; i++) {
+			const user = chat.users[0]
+			await this.userModel.findByIdAndUpdate(user, {
+				$pull: { chats: chat._id },
+			})
+			const socketId = await this.getSocket(user._id)
+			if (socketId) {
+				client.to(socketId).emit(ChatActions.receive_delete, chat._id)
+			}
+		}
+		await chat.deleteOne()
+	}
+
+	pickUserPublicData(
+		user: Omit<
+			User & {
+				_id: Types.ObjectId
+			},
+			never
+		>
+	) {
+		return {
+			_id: user._id,
+			email: user.email,
+			username: user.username,
+			avatar: user.avatar,
+		}
 	}
 }
