@@ -11,6 +11,7 @@ import { UpdateMessageDto } from './dto/update-message.dto'
 import { Server, Socket } from 'socket.io'
 import { client_url } from 'src/constants'
 import { MessageActions } from './types/message-actions.types'
+import { DeleteMessageDto } from './dto/delete-messgae.dto'
 
 @WebSocketGateway({
 	cors: {
@@ -29,6 +30,14 @@ export class MessageGateway {
 		@ConnectedSocket() client: Socket
 	) {
 		return this.messageService.createMessage(createMessageDto, client)
+	}
+
+	@SubscribeMessage(MessageActions.delete)
+	async deleteChat(
+		@MessageBody() deleteMessageDto: DeleteMessageDto,
+		@ConnectedSocket() client: Socket
+	) {
+		await this.messageService.deleteMessage(deleteMessageDto, client)
 	}
 	// 	this.server.emit('message', message)
 

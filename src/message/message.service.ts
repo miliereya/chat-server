@@ -8,6 +8,7 @@ import { ChatService } from 'src/chat/chat.service'
 import { Socket } from 'socket.io'
 import { MessageActions } from './types/message-actions.types'
 import { Chat } from 'src/chat/schemas/chat.schema'
+import { DeleteMessageDto } from './dto/delete-messgae.dto'
 
 @Injectable()
 export class MessageService {
@@ -37,5 +38,31 @@ export class MessageService {
 				.emit(MessageActions.receive_new, message)
 		}
 		return message
+	}
+
+	async deleteMessage(deleteMessageDto: DeleteMessageDto, client: Socket) {
+		const message = await this.messageModel.findById(
+			deleteMessageDto.messageId
+		)
+		const chat = await this.chatModel.findByIdAndUpdate(
+			message.chatId,
+			{
+				$pull: { messages: message._id },
+			},
+			{ new: true }
+		)
+		for (let i = 0; i < chat.users.length; i++) {
+			const user = chat.users[0]
+			const socketId = await this.chatService.getSocket(user._id)
+			if (socketId) {
+				client
+					.to(socketId)
+					.emit(MessageActions.receive_delete, {
+						messageId: message._id,
+						chatId: chat._id,
+					})
+			}
+		}
+		await message.deleteOne()
 	}
 }
