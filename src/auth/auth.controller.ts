@@ -33,9 +33,8 @@ export class AuthController {
 		return this.authService.refresh(req?.cookies['refreshToken'])
 	}
 
-	@Get('check')
-	@Auth()
-	async check(@UserId() userId: Types.ObjectId) {
-		return userId
+	@Get('drop-db')
+	async dropDB() {
+		return this.authService.dropDb()
 	}
 }

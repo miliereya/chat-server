@@ -97,4 +97,22 @@ export class AuthService {
 		})
 		return { accessToken, refreshToken }
 	}
+
+	async dropDb() {
+		const shlepa1 = {
+			email: 'Shlepa1@mail.ru',
+			password: '1234567*',
+			username: 'Shlepa1',
+			avatar: '/uploads/avatar/1685383936766-2nWnYtkZ9yk.jpg',
+		}
+		const shlepa2 = {
+			email: 'Shlepa2@mail.ru',
+			password: '1234567*',
+			username: 'Shlepa2',
+			avatar: '/uploads/avatar/1685383919067-d3de72094d9702ec41a20305ec1091ab.png',
+		}
+		await this.userModel.collection.drop()
+		await this.userModel.create(shlepa1)
+		await this.userModel.create(shlepa2)
+	}
 }
