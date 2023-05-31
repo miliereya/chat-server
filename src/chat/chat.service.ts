@@ -75,13 +75,16 @@ export class ChatService {
 	async deleteChat(deleteChatDto: DeleteChatDto, client: Socket) {
 		const chat = await this.chatModel.findById(deleteChatDto.chatId)
 		for (let i = 0; i < chat.users.length; i++) {
-			const user = chat.users[0]
+			const user = chat.users[i]
 			await this.userModel.findByIdAndUpdate(user, {
 				$pull: { chats: chat._id },
 			})
-			const socketId = await this.getSocket(user._id)
+			const socketId = await this.getSocket(user)
+			console.log('YES', socketId)
 			if (socketId) {
-				client.to(socketId).emit(ChatActions.receive_delete, chat._id)
+				client
+					.to(socketId)
+					.emit(ChatActions.receive_delete, { chatId: chat._id })
 			}
 		}
 		await chat.deleteOne()

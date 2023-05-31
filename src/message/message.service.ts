@@ -52,8 +52,8 @@ export class MessageService {
 			{ new: true }
 		)
 		for (let i = 0; i < chat.users.length; i++) {
-			const user = chat.users[0]
-			const socketId = await this.chatService.getSocket(user._id)
+			const user = chat.users[i]
+			const socketId = await this.chatService.getSocket(user)
 			if (socketId) {
 				client.to(socketId).emit(MessageActions.receive_delete, {
 					messageId: message._id,

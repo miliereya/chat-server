@@ -43,8 +43,8 @@ export class AuthService {
 	async login(dto: LoginDto) {
 		const user = await this.userModel.findOne({ email: dto.email })
 		if (!user) throw new BadRequestException('No user by following email')
-
 		const isValidPassword = await compare(dto.password, user.password)
+
 		if (!isValidPassword) throw new BadRequestException('Wrong credentials')
 
 		const tokens = await this.generateTokens({ _id: user._id })
@@ -99,15 +99,17 @@ export class AuthService {
 	}
 
 	async dropDb() {
+		const salt = await genSalt(3)
+
 		const shlepa1 = {
 			email: 'Shlepa1@mail.ru',
-			password: '1234567*',
+			password: await hash('1234567*', salt),
 			username: 'Shlepa1',
 			avatar: '/uploads/avatar/1685383936766-2nWnYtkZ9yk.jpg',
 		}
 		const shlepa2 = {
 			email: 'Shlepa2@mail.ru',
-			password: '1234567*',
+			password: await hash('1234567*', salt),
 			username: 'Shlepa2',
 			avatar: '/uploads/avatar/1685383919067-d3de72094d9702ec41a20305ec1091ab.png',
 		}
