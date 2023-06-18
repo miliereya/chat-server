@@ -6,6 +6,7 @@ import { UpdateAvatarDto } from './dto/update-avatar.dto'
 import { FindUsersDto } from './dto/find-users.dto'
 import { TypeFindUsersMongooseParams } from './types'
 import { ChatService } from 'src/chat/chat.service'
+import { UpdateUsernameDto } from './dto/update-username.dto'
 
 @Injectable()
 export class UserService {
@@ -30,6 +31,15 @@ export class UserService {
 		await user.save()
 		return {
 			avatar: user.avatar,
+		}
+	}
+
+	async updateUsername(userId: Types.ObjectId, dto: UpdateUsernameDto) {
+		const user = await this.findById(userId)
+		user.username = dto.username
+		await user.save()
+		return {
+			username: user.username,
 		}
 	}
 
